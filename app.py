@@ -6,8 +6,17 @@ import os
 app = Flask(__name__)
 
 # Load the model and encoders
-model = joblib.load('models/house_price_model_2.joblib')
-encoders = joblib.load('encoders/encoders_2.joblib')
+try:
+    # Get the absolute path to the model files
+    model_path = os.path.join(os.path.dirname(__file__), 'models', 'house_price_model_compressed.joblib')
+    encoders_path = os.path.join(os.path.dirname(__file__), 'encoders', 'encoders_compressed.joblib')
+    
+    model = joblib.load(model_path)
+    encoders = joblib.load(encoders_path)
+except Exception as e:
+    print(f"Error loading model files: {str(e)}")
+    model = None
+    encoders = None
 
 @app.route('/')
 def home():
@@ -16,7 +25,12 @@ def home():
 @app.route('/predict', methods=['POST'])
 def predict():
     try:
+        if model is None or encoders is None:
+            print("Error: Model or encoders not loaded")
+            return jsonify({'error': 'Model or encoders not loaded properly'}), 500
+            
         data = request.json
+        print(f"Received data: {data}")
         
         # Create feature array
         features = []
@@ -46,4 +60,4 @@ def predict():
         return jsonify({'error': str(e)}), 400
 
 if __name__ == '__main__':
-    app.run(debug=True, port=8080)
+    app.run(host='127.0.0.1', port=8080)
