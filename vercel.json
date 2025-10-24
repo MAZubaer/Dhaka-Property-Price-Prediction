@@ -6,6 +6,10 @@
             "use": "@vercel/python"
         },
         {
+            "src": "static/**",
+            "use": "@vercel/static"
+        },
+        {
             "src": "templates/**",
             "use": "@vercel/static"
         }
@@ -14,6 +18,9 @@
         {
             "src": "/static/(.*)",
             "dest": "/static/$1"
+        },
+        {
+            "handle": "filesystem"
         },
         {
             "src": "/(.*)",

@@ -1,9 +1,9 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, send_from_directory
 import joblib
 import numpy as np
 import os
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static', static_url_path='/static')
 
 # Load the model and encoders
 try:
@@ -17,6 +17,10 @@ except Exception as e:
     print(f"Error loading model files: {str(e)}")
     model = None
     encoders = None
+
+@app.route('/static/<path:path>')
+def send_static(path):
+    return send_from_directory('static', path)
 
 @app.route('/')
 def home():
